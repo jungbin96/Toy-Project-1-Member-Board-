@@ -1,0 +1,48 @@
+package com.example.toyproject1.member_dashboard.member.service;
+
+import com.example.toyproject1.member_dashboard.member.dto.MemberResponse;
+import com.example.toyproject1.member_dashboard.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class MemberService {
+
+/*  왜 클래스 전체에 readOnly=true를 걸고, 쓰기 메서드만 @Transactional을 다시 붙일까?
+    이유 1 — 안전함
+    조회 메서드에서 실수로 엔티티를 수정해도 DB에 반영되지 않음.
+
+    이유 2 — 실수 방지
+    "쓰기 로직"인 메서드만 명확하게 @Transactional 붙이니까
+        한눈에 어떤 메서드가 DB를 변경하는지 파악 가능.
+
+    이유 3 — 성능 최적화
+    조회용 메서드는 훨씬 빠르고 부하 적음.
+*/
+    private final MemberRepository memberRepository;
+
+    //회원 생성
+
+
+    //회원 단일 조회
+
+
+    //회원 전체 조회
+    public List<MemberResponse> getMembers(){
+        return memberRepository.findAll() //Member Entity
+                .stream() //리스트를 데이터 흐름처럼 처리
+                .map(MemberResponse::from) // 엔티티를 dto로 변경 Member Entity -> MemberResponse DTO
+                .toList(); //리스트 반환
+    }
+
+    //회원 수정
+
+    //회원 삭제
+
+
+}
