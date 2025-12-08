@@ -5,13 +5,16 @@ spring:
     url: jdbc:mysql://localhost:3306/toy_project1?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 1111
-
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
 
 logging:
   level:
