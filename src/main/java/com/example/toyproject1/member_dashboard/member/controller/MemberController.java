@@ -2,6 +2,7 @@ package com.example.toyproject1.member_dashboard.member.controller;
 
 import com.example.toyproject1.member_dashboard.member.dto.MemberCreateRequest;
 import com.example.toyproject1.member_dashboard.member.dto.MemberResponse;
+import com.example.toyproject1.member_dashboard.member.dto.MemberUpdateRequest;
 import com.example.toyproject1.member_dashboard.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,14 @@ public class MemberController {
     public ResponseEntity<MemberResponse> getMember(@PathVariable Long id){
         return ResponseEntity.ok(memberService.getMember(id));
     }
+
+    //회원 정보 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<MemberResponse> updateMember(@PathVariable Long id, @RequestBody MemberUpdateRequest request){
+        return ResponseEntity.ok(memberService.updateMember(id,request));
+    }
+
+    //회원 정보 삭제
 
 
 }
