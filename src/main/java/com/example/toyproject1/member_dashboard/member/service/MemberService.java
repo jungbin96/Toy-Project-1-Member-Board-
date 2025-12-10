@@ -30,7 +30,12 @@ public class MemberService {
 
 
     //회원 단일 조회
+    public MemberResponse getMember(Long id){
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. id =" +id));
 
+        return MemberResponse.from(member);
+    }
 
     //회원 전체 조회
     public List<MemberResponse> getMembers(){
