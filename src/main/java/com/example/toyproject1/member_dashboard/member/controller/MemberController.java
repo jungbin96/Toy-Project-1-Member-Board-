@@ -33,7 +33,7 @@ public class MemberController {
 
     //회원 단일 조회
     @GetMapping("/{id}")
-    public ResponseEntity<MemberResponse> getMember(@PathVariable Long id){
+    public ResponseEntity<MemberResponse> getMember(@PathVariable Long id) {
         return ResponseEntity.ok(memberService.getMember(id));
     }
 
