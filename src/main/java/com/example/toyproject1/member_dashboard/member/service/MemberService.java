@@ -76,6 +76,12 @@ public class MemberService {
 
 
     //회원 삭제
-
+    @Transactional
+    public void deleteMember(Long id){
+        if(!memberRepository.existsById(id)){
+            throw  new IllegalArgumentException("회원이 존재하지 않습니다.id="+id);
+        }
+        memberRepository.deleteById(id);
+    }
 
 }
