@@ -2,11 +2,13 @@ package com.example.toyproject1.member_dashboard.member.service;
 
 import com.example.toyproject1.member_dashboard.member.dto.MemberCreateRequest;
 import com.example.toyproject1.member_dashboard.member.dto.MemberResponse;
+import com.example.toyproject1.member_dashboard.member.dto.MemberUpdateRequest;
 import com.example.toyproject1.member_dashboard.member.entity.Member;
 import com.example.toyproject1.member_dashboard.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.List;
 
@@ -63,6 +65,15 @@ public class MemberService {
     }
 
     //회원 수정
+    @Transactional
+    public MemberResponse updateMember(Long id, MemberUpdateRequest request){
+        Member member= memberRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("회원이 조재하지 않습니다.id=" + id));
+
+        member.update(request.getName(), request.getEmail(), request.getStatus());
+        return MemberResponse.from(member);
+    }
+
 
     //회원 삭제
 
