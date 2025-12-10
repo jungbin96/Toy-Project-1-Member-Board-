@@ -24,6 +24,12 @@ public class MemberController {
                 .created(URI.create("/api/members/"+response.getId()))
                 .body(response);
     }
+    //회원 전체 조회
+    @GetMapping
+    public ResponseEntity<List<MemberResponse>> getAllMembers(){
+        return ResponseEntity.ok(memberService.getMembers());
+    }
+
 
 
 }
