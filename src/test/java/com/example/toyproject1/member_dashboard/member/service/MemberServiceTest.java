@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -66,7 +68,48 @@ public class MemberServiceTest {
         //레포 호출 검증
         then(memberRepository).should().existsByEmail("xg961215@gmail.com");
         then(memberRepository).should(never()).save(any(Member.class));
-
     }
+
+    @Test
+    void getMember_success(){
+        //given
+        Long memberId = 1L;
+
+        Member member = Member.builder()
+                .id(memberId)
+                .name("표표표")
+                .email("xg961215@gmail.com")
+                .build();
+
+        given(memberRepository.findById(memberId))
+                .willReturn(Optional.of(member));
+
+        //when
+        MemberResponse response = memberService.getMember(memberId);
+
+        //then
+        assertThat(response.getId()).isEqualTo(memberId);
+        assertThat(response.getName()).isEqualTo("표표표");
+        assertThat(response.getEmail()).isEqualTo("xg961215@gmail.com");
+
+        then(memberRepository).should().findById(memberId);
+    }
+
+    @Test
+    void getMember_fail_whenMemberNotFound(){
+        //given
+        Long memberId = 99L;
+
+        given(memberRepository.findById(memberId))
+                .willReturn(Optional.empty());
+
+        //when & then
+        assertThatThrownBy(()-> memberService.getMember(memberId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("회원이 존재하지 않습니다. id =" +memberId);
+
+        then(memberRepository).should().findById(memberId);
+    }
+
 
 }
