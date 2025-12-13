@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -111,5 +112,54 @@ public class MemberServiceTest {
         then(memberRepository).should().findById(memberId);
     }
 
+    @Test
+    void getMembers_success(){
+        //given
+        Member m1 = Member.builder()
+                .id(1L)
+                .name("홍길동")
+                .email("aaa@naver.com")
+                .build();
+
+        Member m2 = Member.builder()
+                .id(2L)
+                .name("박박박")
+                .email("bbb@naver.com")
+                .build();
+
+        given(memberRepository.findAll()).willReturn(List.of(m1,m2));
+
+        //when
+        List<MemberResponse> result = memberService.getMembers();
+
+        //then
+        assertThat(result).hasSize(2);
+
+        // id/name/email이 매핑되었는지까지 검증(핵심)
+        assertThat(result.getFirst().getId()).isEqualTo(1L);
+        assertThat(result.getFirst().getName()).isEqualTo("홍길동");
+        assertThat(result.getFirst().getEmail()).isEqualTo("aaa@naver.com");
+        assertThat(result.get(1).getId()).isEqualTo(2L);
+        assertThat(result.get(1).getName()).isEqualTo("박박박");
+        assertThat(result.get(1).getEmail()).isEqualTo("bbb@naver.com");
+
+        then(memberRepository).should().findAll();
+    }
+
+    @Test
+    void getMembers_success_whenEmpty(){
+        //given
+        given(memberRepository.findAll()).willReturn(List.of());
+
+        //when
+        List<MemberResponse> result = memberService.getMembers();
+
+        //then
+        assertThat(result).isNotNull();
+        assertThat(result).isEmpty();
+
+        then(memberRepository).should().findAll();
+
+    }
 
 }
