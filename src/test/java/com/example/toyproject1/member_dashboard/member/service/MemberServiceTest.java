@@ -208,8 +208,48 @@ public class MemberServiceTest {
         //when & then
         assertThatThrownBy(()->memberService.updateMember(memberId,request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("회원이 조재하지 않습니다.id=" + memberId);
+                .hasMessage("회원이 존재하지 않습니다.id=" + memberId);
 
         then(memberRepository).should().findById(memberId);
     }
+
+    @Test
+    void deleteMember_success(){
+        //given
+        Long memberId = 1L;
+
+        Member member = Member.builder()
+                .id(memberId)
+                .name("홍길동")
+                .email("aaa@naver.com")
+                .build();
+
+        given(memberRepository.existsById(memberId))
+                .willReturn(true);
+
+        //when
+        memberService.deleteMember(memberId);
+
+        //then
+        then(memberRepository).should().existsById(memberId);
+        then(memberRepository).should().deleteById(memberId);
+    }
+
+    @Test
+    void deleteMember_fail_whenMemberNotFound(){
+        //given
+        Long memberId = 99L;
+
+        given(memberRepository.existsById(memberId))
+                .willReturn(false);
+
+        //when&then
+        assertThatThrownBy(()->memberService.deleteMember(memberId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("회원이 존재하지 않습니다.id=" + memberId);
+
+        then(memberRepository).should().existsById(memberId);
+        then(memberRepository).should(never()).deleteById(anyLong());
+    }
+
 }
