@@ -2,6 +2,7 @@ package com.example.toyproject1.member_dashboard.member.service;
 
 import com.example.toyproject1.member_dashboard.member.dto.MemberCreateRequest;
 import com.example.toyproject1.member_dashboard.member.dto.MemberResponse;
+import com.example.toyproject1.member_dashboard.member.dto.MemberUpdateRequest;
 import com.example.toyproject1.member_dashboard.member.entity.Member;
 import com.example.toyproject1.member_dashboard.member.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
@@ -162,4 +163,53 @@ public class MemberServiceTest {
 
     }
 
+    @Test
+    void updateMember_success(){
+        //given
+        Long memberId = 1L;
+
+        Member member = Member.builder()
+                .id(memberId)
+                .name("홍길동")
+                .email("aaa@naver.com")
+                .build();
+
+        MemberUpdateRequest request =  new MemberUpdateRequest("표표표", "bbb@naver.com");
+
+        given(memberRepository.findById(memberId))
+                .willReturn(Optional.of(member));
+
+        //when
+        MemberResponse response = memberService.updateMember(memberId,request);
+
+        //then: 응답이 수정된 값으로 나오는지
+        assertThat(response.getId()).isEqualTo(memberId);
+        assertThat(response.getName()).isEqualTo("표표표");
+        assertThat(response.getEmail()).isEqualTo("bbb@naver.com");
+
+        // then: 실제 엔티티도 수정됐는지(서비스 로직 검증)
+        assertThat(member.getName()).isEqualTo("표표표");
+        assertThat(member.getEmail()).isEqualTo("bbb@naver.com");
+
+        then(memberRepository).should().findById(memberId);
+    }
+
+    @Test
+    void updateMember_fail_whenMemberNotFound(){
+        //given
+        Long memberId = 99L;
+
+        MemberUpdateRequest request =
+                new MemberUpdateRequest("표표표", "bbb@naver.com");
+
+        given(memberRepository.findById(memberId))
+                .willReturn(Optional.empty());
+
+        //when & then
+        assertThatThrownBy(()->memberService.updateMember(memberId,request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("회원이 조재하지 않습니다.id=" + memberId);
+
+        then(memberRepository).should().findById(memberId);
+    }
 }
