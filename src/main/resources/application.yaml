@@ -1,17 +1,29 @@
+server:
+  port: 12950
+
 spring:
   application:
     name: toy-project
   datasource:
-    url: jdbc:mysql://localhost:3306/toy_project1?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password: 1111
+    #Home DB
+    #url: jdbc:mysql://localhost:3306/toy_project1?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    #username: root
+    #password: 1111
 
+    #office DB
+    url: jdbc:mysql://localhost:3306/toy_project1?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: root
+    password: koma1215
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
 
 logging:
   level:
