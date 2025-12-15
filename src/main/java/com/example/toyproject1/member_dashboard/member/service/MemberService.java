@@ -68,7 +68,7 @@ public class MemberService {
     @Transactional
     public MemberResponse updateMember(Long id, MemberUpdateRequest request){
         Member member= memberRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("회원이 조재하지 않습니다.id=" + id));
+                .orElseThrow(()-> new IllegalArgumentException("회원이 존재하지 않습니다.id=" + id));
 
         member.update(request.getName(), request.getEmail(), request.getStatus());
         return MemberResponse.from(member);
