@@ -1,5 +1,6 @@
 package com.example.toyproject1.member_dashboard.member.service;
 
+import com.example.toyproject1.member_dashboard.exception.MemberNotFoundException;
 import com.example.toyproject1.member_dashboard.member.dto.MemberCreateRequest;
 import com.example.toyproject1.member_dashboard.member.dto.MemberResponse;
 import com.example.toyproject1.member_dashboard.member.dto.MemberUpdateRequest;
@@ -51,7 +52,7 @@ public class MemberService {
     //회원 단일 조회
     public MemberResponse getMember(Long id){
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. id =" +id));
+                .orElseThrow(() -> new MemberNotFoundException(id));
 
         return MemberResponse.from(member);
     }

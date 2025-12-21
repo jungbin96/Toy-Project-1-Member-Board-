@@ -1,5 +1,6 @@
 package com.example.toyproject1.member_dashboard.member.controller;
 
+import com.example.toyproject1.member_dashboard.exception.MemberNotFoundException;
 import com.example.toyproject1.member_dashboard.global.GlobalExceptionHandler;
 import com.example.toyproject1.member_dashboard.member.dto.MemberResponse;
 import com.example.toyproject1.member_dashboard.member.service.MemberService;
@@ -64,7 +65,7 @@ public class MemberControllerTest {
 
     @Test
     void 회원_단건_조회_실패_존재하지_않음() throws Exception {
-        given(memberService.getMember(999L)).willThrow(new IllegalArgumentException("회원이 존재하지 않습니다. id =999"));
+        given(memberService.getMember(999L)).willThrow(new MemberNotFoundException(999L));
 
         mockMvc.perform(get("/api/members/{id}",999L))
                 .andExpect(status().isNotFound())
