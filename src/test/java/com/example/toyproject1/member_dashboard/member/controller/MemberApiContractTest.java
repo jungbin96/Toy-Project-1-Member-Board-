@@ -2,29 +2,36 @@ package com.example.toyproject1.member_dashboard.member.controller;
 
 import com.example.toyproject1.member_dashboard.exception.MemberNotFoundException;
 import com.example.toyproject1.member_dashboard.global.GlobalExceptionHandler;
+import com.example.toyproject1.member_dashboard.member.dto.MemberCreateRequest;
 import com.example.toyproject1.member_dashboard.member.dto.MemberResponse;
+import com.example.toyproject1.member_dashboard.member.entity.Member;
 import com.example.toyproject1.member_dashboard.member.service.MemberService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import static org.mockito.ArgumentMatchers.any;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.springframework.context.annotation.Import;
 
 @WebMvcTest(MemberController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(GlobalExceptionHandler.class)
 
-public class MemberControllerTest {
+public class MemberApiContractTest {
 
     /*[ MockMvc ]
             ↓ (가짜 HTTP 요청)
@@ -33,6 +40,9 @@ public class MemberControllerTest {
             [ MemberService ]      ← Mockito 가짜
             */
 
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Autowired
     MockMvc mockMvc;
@@ -71,5 +81,33 @@ public class MemberControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("회원이 존재하지 않습니다. id =999"));
     }
+
+    @Test
+    void 회원_생성_성공_201_Location_헤더_포함() throws Exception {
+        //given
+        MemberCreateRequest request = new MemberCreateRequest("pyo","pyo@naver.com");
+        MemberResponse response = MemberResponse.builder()
+                .id(1L)
+                .name("pyo")
+                .email("pyo@naver.com")
+                .status("ACTIVE")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        given(memberService.createMember(any(MemberCreateRequest.class)))
+                .willReturn(response);
+
+        //when & then
+        mockMvc.perform(post("/api/members")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/api/members/1"))
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("pyo"))
+                .andExpect(jsonPath("$.email").value("pyo@naver.com"));
+    }
+
 
 }
